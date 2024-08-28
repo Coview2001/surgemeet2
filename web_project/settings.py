@@ -66,10 +66,10 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5500', 
     'http://127.0.0.1:5501',
     'http://localhost:5173', 
-    'https://surgemeetlink.azurewebsites.net/',
+    #'https://surgemeetlink.azurewebsites.net/',
 ]
 
-CSRF_TRUSTED_ORIGINS=[ 'http://localhost:3000' ,'https://surgemeetlink.azurewebsites.net/']
+CSRF_TRUSTED_ORIGINS=[ 'http://localhost:3000' ]#,'https://surgemeetlink.azurewebsites.net/']
 
 ROOT_URLCONF = 'web_project.urls'
 
@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'web_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'dontdeletewithoutbackup',
+        'NAME': 'dontdeletewithoutbackup2',
         'ENFORCE_SCHEMA': False,  
         'CLIENT': {
             'host': 'mongodb+srv://deepakramanujam321:o8rPuwKDidIAWWDf@cluster0.fwvqbjh.mongodb.net/',
