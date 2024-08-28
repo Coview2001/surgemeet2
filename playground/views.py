@@ -47,9 +47,11 @@ def authenticate_google(email):
 
     if not creds or not creds.valid:
         try:
-            logging.info("Starting authentication flow...")
+            print("Starting authentication flow...")
             flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            print("gvf")
             creds = flow.run_local_server(port=0)
+            print("falied at local ")
             logging.info("Authentication successful, credentials obtained.")
             service = build('oauth2', 'v2', credentials=creds)
             user_info = service.userinfo().get().execute()
