@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'web_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'dontdeletewithoutbackup2',
+        'NAME': 'dontdeletewithoutbackup',
         'ENFORCE_SCHEMA': False,  
         'CLIENT': {
             'host': 'mongodb+srv://deepakramanujam321:o8rPuwKDidIAWWDf@cluster0.fwvqbjh.mongodb.net/',
