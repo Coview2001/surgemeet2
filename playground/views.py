@@ -168,9 +168,8 @@ def list_participants(request, conference_id,email):
     creds = authenticate_google(email)
     try:
         client = meet_v2.ConferenceRecordsServiceClient(credentials=creds)
-        request = meet_v2.ListParticipantsRequest(parent=f'conferenceRecords/{'801a01b0-c86b-4f2c-a4ed-7d1f8f8546ea'}')
+        request = meet_v2.ListParticipantsRequest(parent=f'conferenceRecords/{conference_id}')
         page_result = client.list_participants(request=request)
-        print(page_result)
         response_data = [str(response) for response in page_result]
         response_text = "\n".join(response_data)
         return HttpResponse(response_text, content_type="text/plain")
