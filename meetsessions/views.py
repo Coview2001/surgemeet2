@@ -14,6 +14,7 @@ from .models import Session, Student  # Adjust the import path according to your
 @require_http_methods(["POST"])
 def create_session(request):
     data = json.loads(request.body)
+    
     try:
         # Get the max id from the existing sessions and increment it by 1
         max_id = Session.objects.aggregate(Max('id'))['id__max']
@@ -33,20 +34,23 @@ def create_session(request):
         # Create students and gather their email addresses
         recipient_emails = []
         for student_data in data['Students']:
-            Student.objects.create(
-                session=session,
-                stuId=student_data['stuId'],
-                stuname=student_data['stuname'],
-                gender=student_data['gender'],
-                age=student_data['age'],
-                branch=student_data['branch'],
-                collegeName=student_data['collegeName'],
-                email=student_data['email']
-            )
-            recipient_emails.append(student_data['email'])
+            try:
+                Student.objects.create(
+                    session=session,
+                    stuId=student_data['stuId'],
+                    stuname=student_data['stuname'],
+                    gender=student_data['gender'],
+                    phonenumber=student_data['phonenumber'],
+                    branch=student_data['branch'],
+                    collegeName=student_data['collegeName'],
+                    email=student_data['email']
+                )
+                recipient_emails.append(student_data['email'])
+            except Exception as e:
+                print(f"Error creating student: {e}")
         
         # Prepare email details
-        subject = f"Details for the session: {session.Session_Topic}"
+        subject = f"Details for the {session.Session_Topic} session"
         message = f"""
         Hello,
 
@@ -68,8 +72,6 @@ def create_session(request):
         return JsonResponse({'message': 'Session created and emails sent successfully'}, status=201)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
-
-
 def send_session_email(subject, message, from_email, recipient_list):
     # Set up a secure SSL context
     context = ssl.create_default_context(cafile=certifi.where())
@@ -80,11 +82,7 @@ def send_session_email(subject, message, from_email, recipient_list):
             server.starttls(context=context)  # Secure the connection
             server.ehlo()  # Can be omitted
             server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
-            
-            # Create the email message
             email = EmailMessage(subject, message, from_email, recipient_list)
-            
-            # Send the email to each recipient in the list
             for recipient in recipient_list:
                 server.sendmail(from_email, recipient, email.message().as_string())
         

@@ -15,7 +15,7 @@ class Student(models.Model):
     stuId = models.CharField(max_length=10)
     stuname = models.CharField(max_length=100)
     gender = models.CharField(max_length=10)
-    age = models.CharField(max_length=3)
+    phonenumber = models.CharField(max_length=15,default="")
     branch = models.CharField(max_length=100)
     collegeName = models.CharField(max_length=100)
     email = models.EmailField()

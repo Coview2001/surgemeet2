@@ -13,6 +13,10 @@ from googleapiclient.discovery import build
 import os
 from .models import UserToken
 import pytz
+from userauth.models import UserLogin
+from dateutil import parser
+
+
 
 
 SCOPES = [
@@ -21,83 +25,99 @@ SCOPES = [
     'openid' 
 ]
 
-def authenticate_google(email):
-    creds = None
-    try:
-        logging.info("Attempting to load credentials from the database...")
-        user_token = UserToken.objects.get(pk=email)  # Replace with actual user's email
-        creds_data = user_token.token
-        creds = Credentials.from_authorized_user_info(creds_data, SCOPES)
-        logging.info("Credentials loaded from the database.")
+# def authenticate_google(email):
+#     creds = None
+#     try:
+#         logging.info("Attempting to load credentials from the database...")
+#         user_token = UserToken.objects.get(pk=email)  # Replace with actual user's email
+#         creds_data = user_token.token
+#         creds = Credentials.from_authorized_user_info(creds_data, SCOPES)
+#         logging.info("Credentials loaded from the database.")
 
-        if creds and creds.expired and creds.refresh_token:
-            try:
-                logging.info("Credentials expired. Attempting to refresh...")
-                creds.refresh(Request())
-                logging.info("Credentials refreshed successfully.")
-                create_userToken(user_token.userEmail, creds.to_json())
-            except Exception as e:
-                logging.error(f"Error refreshing credentials: {e}")
-                creds = None
-    except UserToken.DoesNotExist:
-        logging.info("No credentials found in the database. Initiating authentication flow...")
-    except Exception as e:
-        logging.error(f"Error loading credentials from the database: {e}")
-        creds = None
+#         if creds and creds.expired and creds.refresh_token:
+#             try:
+#                 logging.info("Credentials expired. Attempting to refresh...")
+#                 creds.refresh(Request())
+#                 logging.info("Credentials refreshed successfully.")
+#                 create_userToken(user_token.userEmail, creds.to_json())
+#             except Exception as e:
+#                 logging.error(f"Error refreshing credentials: {e}")
+#                 creds = None
+#     except UserToken.DoesNotExist:
+#         logging.info("No credentials found in the database. Initiating authentication flow...")
+#     except Exception as e:
+#         logging.error(f"Error loading credentials from the database: {e}")
+#         creds = None
 
-    if not creds or not creds.valid:
-        try:
-            logging.info("Starting authentication flow...")
-            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-            logging.info("Authentication successful, credentials obtained.")
-            service = build('oauth2', 'v2', credentials=creds)
-            user_info = service.userinfo().get().execute()
-            email = user_info.get('email')
-            logging.info(f"User email retrieved: {email}")
+#     if not creds or not creds.valid:
+#         try:
+#             logging.info("Starting authentication flow...")
+#             flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+#             creds = flow.run_local_server(port=0)
+#             logging.info("Authentication successful, credentials obtained.")
+#             service = build('oauth2', 'v2', credentials=creds)
+#             user_info = service.userinfo().get().execute()
+#             email = user_info.get('email')
+#             logging.info(f"User email retrieved: {email}")
 
-            if not email:
-                raise ValueError("Failed to retrieve user email.")
-            create_userToken(email, creds.to_json())
-            logging.info(f"Credentials saved to the database for {email}.")
-        except Exception as e:
-            logging.error(f"Error during authentication: {e}")
+#             if not email:
+#                 raise ValueError("Failed to retrieve user email.")
+#             create_userToken(email, creds.to_json())
+#             logging.info(f"Credentials saved to the database for {email}.")
+#         except Exception as e:
+#             logging.error(f"Error during authentication: {e}")
+
+#     return creds
+
+# def create_userToken(email, token_json):
+#     try:
+#         logging.info(f"Saving token to the database for {email}...")
+#         token = json.loads(token_json)
+#         userToken, created = UserToken.objects.update_or_create(
+#             userEmail=email,
+#             defaults={'token': token}
+#         )
+#         if created:
+#             logging.info(f"Created new token record for {email}.")
+#         else:
+#             logging.info(f"Updated token record for {email}.")
+#     except json.JSONDecodeError as e:
+#         logging.error(f"Error decoding JSON token: {e}")
+#     except Exception as e:
+#         logging.error(f"Error saving token to the database: {e}")
+
+# def get_userToken(email):
+#     try:
+#         logging.info(f"Fetching token from the database for {email}...")
+#         userToken = UserToken.objects.get(pk=email)
+#         logging.info("Token fetched successfully.")
+#         return userToken.token
+#     except UserToken.DoesNotExist:
+#         logging.info("No token found in the database for this user.")
+#         return None
+#     except Exception as e:
+#         logging.error(f"Error fetching token from the database: {e}")
+#         return None
+def get_token(email):
+    user_token = UserLogin.objects.get(email=email)
+    access_token = user_token.token
+    token_expiry = parser.isoparse(access_token.get('token_expiry')) if access_token.get('token_expiry') else None
+
+    creds = Credentials(
+        token=access_token.get('access_token'),
+        refresh_token=access_token.get('refresh_token'),
+        id_token=access_token.get('id_token'),
+        token_uri=access_token.get('token_uri'),
+        client_id=access_token.get('client_id'),
+        client_secret=access_token.get('client_secret'),
+        scopes=access_token.get('scopes'),
+        expiry=token_expiry,
+    )
 
     return creds
-
-def create_userToken(email, token_json):
-    try:
-        logging.info(f"Saving token to the database for {email}...")
-        token = json.loads(token_json)
-        userToken, created = UserToken.objects.update_or_create(
-            userEmail=email,
-            defaults={'token': token}
-        )
-        if created:
-            logging.info(f"Created new token record for {email}.")
-        else:
-            logging.info(f"Updated token record for {email}.")
-    except json.JSONDecodeError as e:
-        logging.error(f"Error decoding JSON token: {e}")
-    except Exception as e:
-        logging.error(f"Error saving token to the database: {e}")
-
-def get_userToken(email):
-    try:
-        logging.info(f"Fetching token from the database for {email}...")
-        userToken = UserToken.objects.get(pk=email)
-        logging.info("Token fetched successfully.")
-        return userToken.token
-    except UserToken.DoesNotExist:
-        logging.info("No token found in the database for this user.")
-        return None
-    except Exception as e:
-        logging.error(f"Error fetching token from the database: {e}")
-        return None
-
 @require_GET
 def send_meet_link(request,email):
-    creds = authenticate_google(email)
+    creds = get_token(email)
     try:
         client = meet_v2.SpacesServiceClient(credentials=creds)
         request = meet_v2.CreateSpaceRequest()
@@ -107,9 +127,11 @@ def send_meet_link(request,email):
     except Exception as error:
         return HttpResponse(f'An error occurred: {error}')
 
+
+
 @require_GET
 def get_meeting_details(request, meeting_code,email):
-    creds = authenticate_google(email)
+    creds = get_token(email)
     try:
         client = meet_v2.SpacesServiceClient(credentials=creds)
         request = meet_v2.GetSpaceRequest(name=f'spaces/{meeting_code}')
@@ -133,7 +155,7 @@ def get_meeting_details(request, meeting_code,email):
 def list_conferences(request,email):
     # Authenticate and get credentials
     print(email)
-    creds = authenticate_google(email)
+    creds = get_token(email)
     if creds is None or not creds.valid:
         return HttpResponse("Failed to authenticate Google credentials or credentials are invalid.", content_type="text/plain")
 
@@ -165,7 +187,7 @@ def list_conferences(request,email):
 
 @require_GET
 def list_participants(request, conference_id,email):
-    creds = authenticate_google(email)
+    creds = get_token(email)
     try:
         client = meet_v2.ConferenceRecordsServiceClient(credentials=creds)
         request = meet_v2.ListParticipantsRequest(parent=f'conferenceRecords/{conference_id}')
@@ -178,7 +200,7 @@ def list_participants(request, conference_id,email):
 
 @require_GET
 def list_all_participant_sessions(request, conference_id,email):
-    creds = authenticate_google(email)
+    creds = get_token(email)
     try:
         client = meet_v2.ConferenceRecordsServiceClient(credentials=creds)
         participants_request = meet_v2.ListParticipantsRequest(parent=f'conferenceRecords/{conference_id}')
@@ -201,7 +223,7 @@ def list_all_participant_sessions(request, conference_id,email):
 
 @require_GET
 def getParticipantsList(request, meeting_code, instructorName,email):
-    creds = authenticate_google(email)
+    creds = get_token(email)
     try:
         client = meet_v2.SpacesServiceClient(credentials=creds)
         space_request = meet_v2.GetSpaceRequest(name=f'spaces/{meeting_code}')
@@ -213,7 +235,7 @@ def getParticipantsList(request, meeting_code, instructorName,email):
         return JsonResponse({'error': str(error)})
 
 def attendenceInstPartInfo(nameOfMeeting, instructorName,email):
-    creds = authenticate_google(email)
+    creds = get_token(email)
     try:
         conference_id = getConferenceIdByName(creds, nameOfMeeting)
         if conference_id:
@@ -270,7 +292,7 @@ def calculate_duration(start_time: str, end_time: str):
     return int(minutes)
 
 def getAllparticipantInfo(conference_id, instName,email):
-    creds = authenticate_google(email)
+    creds = get_token(email)
     try:
         client = meet_v2.ConferenceRecordsServiceClient(credentials=creds)
         participants_request = meet_v2.ListParticipantsRequest(parent=f'conferenceRecords/{conference_id}')
@@ -305,7 +327,7 @@ def getAllparticipantInfo(conference_id, instName,email):
 
 @require_GET
 def getParticipantsLog(request, meeting_code, instructorName,email):
-    creds = authenticate_google(email)
+    creds = get_token(email)
     if not creds:
         return JsonResponse({'error': 'Google authentication failed'}, status=500)
     try:
@@ -329,7 +351,7 @@ def getParticipantsLog(request, meeting_code, instructorName,email):
         return JsonResponse({'error': f'An error occurred: {e}'}, status=500)
 
 def sessionDetials(instructorName, conference_id,email):
-    creds = authenticate_google(email)
+    creds = get_token(email)
     try:
         client = meet_v2.ConferenceRecordsServiceClient(credentials=creds)
         request = meet_v2.ListParticipantsRequest(parent=f'conferenceRecords/{conference_id}')
