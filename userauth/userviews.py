@@ -12,7 +12,7 @@ def add_user_details(request):
             user = UserDetails(
                 userID=data.get('userID'),
                 email=data.get('email'),
-                category=data.get('category'),  # Include category field
+                category=data.get('category'),
                 expiry_date=data.get('expiry_date'),
                 status=data.get('status')
             )

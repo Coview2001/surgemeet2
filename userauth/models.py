@@ -1,5 +1,5 @@
 from djongo import models
-
+from django.utils import timezone
 class UserDetails(models.Model):
     userID = models.CharField(max_length=100, unique=True)
     email = models.EmailField(unique=True)
@@ -10,8 +10,6 @@ class UserDetails(models.Model):
 
     def __str__(self):
         return self.userID
-
-
 class UserLogin(models.Model):
     email = models.EmailField(unique=True)
     token = models.JSONField()
@@ -32,3 +30,10 @@ class UserLogin(models.Model):
         return user_login
     def __str__(self):
         return self.email
+    
+class UserActivity(models.Model):
+    user = models.OneToOneField(UserDetails, on_delete=models.CASCADE)  # Updated to use your own UserDetails model
+    last_activity = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'{self.user.email} last active at {self.last_activity}'
