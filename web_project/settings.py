@@ -62,6 +62,19 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 
 ]
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'x-csrftoken',
+]
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS'
+]
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000', 
     'http://127.0.0.1:5500', 
@@ -69,7 +82,9 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173', 
    'https://surgemeetlink.azurewebsites.net/',
 ]
+CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'https://surgemeetlink.azurewebsites.net/',

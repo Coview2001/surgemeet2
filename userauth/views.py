@@ -1,7 +1,9 @@
+from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import UserDetails, UserLogin
+from django.views.decorators.csrf import csrf_exempt
 # from rest_framework_simplejwt.tokens import AccessToken
 
 from . import utils
@@ -20,8 +22,14 @@ def authenticate_or_create_user(user_email):
 
 
 class LoginWithGoogle(APIView):
-
+    @csrf_exempt
     def post(self, request):
+        if request.method == 'OPTIONS':
+            response = HttpResponse()
+            response['Access-Control-Allow-Origin'] = '*'
+            response['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+            response['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            return response
         if 'code' in request.data.keys():
             code = request.data['code']
             print("step1 recivied code\t",code)
@@ -60,6 +68,7 @@ class LoginWithGoogle(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class ClearUserLoginData(APIView):
+    @csrf_exempt
     def post(self, request):
         if 'email' in request.data.keys():
             user_email = request.data['email']
