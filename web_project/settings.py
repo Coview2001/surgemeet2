@@ -68,10 +68,9 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5501',
     'http://localhost:5173', 
     'https://surgemeetlink.azurewebsites.net/',
-    'https://trainerview.netlify.app/'
 ]
 
-CSRF_TRUSTED_ORIGINS=[ 'http://localhost:3000' ,'https://surgemeetlink.azurewebsites.net/','https://trainerview.netlify.app/']
+CSRF_TRUSTED_ORIGINS=[ 'http://localhost:3000' ,'https://surgemeetlink.azurewebsites.net/']
 
 ROOT_URLCONF = 'web_project.urls'
 

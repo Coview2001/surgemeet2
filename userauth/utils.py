@@ -4,6 +4,8 @@ import requests
 import json
 from oauth2client.client import OAuth2Credentials
 
+from .models import UserLogin
+
 # import jwt
 def get_id_token_with_code_method_1(code):
     credentials = client.credentials_from_clientsecrets_and_code(
@@ -73,6 +75,17 @@ def credittodic(credentials):
             'user_agent': credentials.user_agent
         }
     return None
+
+
+def clear_user_data(user_email):
+    try:
+        user_login = UserLogin.objects.get(email=user_email)
+        user_login.delete()
+        return {"message": "User login data cleared successfully", "status": "success"}
+    except UserLogin.DoesNotExist:
+        return {"message": "User login data not found", "status": "failure"}
+
+
 
 
 

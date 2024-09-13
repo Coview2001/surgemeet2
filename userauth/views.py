@@ -58,4 +58,11 @@ class LoginWithGoogle(APIView):
                 return Response({"message": user_id['message'],"exists":False})
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
-    
+
+class ClearUserLoginData(APIView):
+    def post(self, request):
+        if 'email' in request.data.keys():
+            user_email = request.data['email']
+            result = utils.clear_user_data(user_email)
+            return Response(result)
+        return Response({"message": "Email parameter missing", "status": "error"}, status=status.HTTP_400_BAD_REQUEST)
