@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ro8b0fdp&=^(+5b!(1-n5-d)%4rlke8rghyil(!=5-8+ujf259'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -67,6 +67,8 @@ CORS_ALLOW_HEADERS = [
     'authorization',
     'x-csrftoken',
 ]
+
+CORS_ENABLED=True
 CORS_ALLOW_METHODS = [
     'GET',
     'POST',
@@ -82,15 +84,13 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173', 
    'https://surgemeetlink.azurewebsites.net/',
 ]
-CORS_ALLOW_ALL_ORIGINS = True
-
-CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = [
+CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'https://surgemeetlink.azurewebsites.net/',
 ]
 
-CSRF_TRUSTED_ORIGINS=[ 'http://localhost:3000' ,'https://surgemeetlink.azurewebsites.net/']
+
+CSRF_TRUSTED_ORIGINS=[ 'https://surgemeetlink.azurewebsites.net/']
 
 ROOT_URLCONF = 'web_project.urls'
 
