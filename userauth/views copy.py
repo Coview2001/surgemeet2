@@ -166,3 +166,8 @@ class ClearUserLoginData(APIView):
                 return Response({"message": "User login data not found", "status": "failure"})
         
         return Response({"message": "Email parameter missing", "status": "error"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+

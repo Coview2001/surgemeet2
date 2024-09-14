@@ -119,9 +119,9 @@ class LoginWithGoogle(APIView):
         if 'code' in request.data.keys():
             code = request.data['code']
             print("step1 recivied code\t",code)
-            credentials = utils.get_id_token_with_code_method_1(code)
-            print("step 2:credentials\n",credentials)
-            return JsonResponse({"messsage":"somehting has happened","resp":credentials})
+            # credentials = utils.get_id_token_with_code_method_2(code)
+            # print("step 2:credentials\n",credentials)
+            return JsonResponse({"it works":"fdgdfgfdgdfg"})
             # id_token = credentials.id_token
             # access_token = {
             #     "access_token": credentials.access_token,
@@ -149,11 +149,8 @@ class LoginWithGoogle(APIView):
             #         "exists":True
             #     })
             # else:
-
-
-
-            #     print("he is not found")
-            #     return Response({"message": user_id['message'],"exists":False})
+                # print("he is not found")
+                # return Response({"message": user_id['message'],"exists":False})
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
@@ -171,3 +168,8 @@ class ClearUserLoginData(APIView):
                 return Response({"message": "User login data not found", "status": "failure"})
         
         return Response({"message": "Email parameter missing", "status": "error"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+

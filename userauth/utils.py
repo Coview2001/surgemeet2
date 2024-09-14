@@ -46,22 +46,22 @@ def get_id_token_with_code_method_1(code):
 #         print(response.json())
 #         return None
 
-# def get_id_token_with_code_method_2(code):
-#     CLIENT_SECRET_FILE = 'client_secret.json'
+def get_id_token_with_code_method_2(code):
+    CLIENT_SECRET_FILE = 'client_secret.json'
 
-#     # Exchange auth code for access token, refresh token, and ID token
-#     credentials = client.credentials_from_clientsecrets_and_code(
-#         CLIENT_SECRET_FILE,
-#        ['https://www.googleapis.com/auth/drive.metadata.readonly',
-#           'https://www.googleapis.com/auth/meetings.space.created',
-#           'https://www.googleapis.com/auth/userinfo.email', 
-#           'https://www.googleapis.com/auth/userinfo.profile',
-#           'openid'],
-#         code
-#     )
-#     # print(credittodic(credentials))
-#     print(credentials.to_json())
-#     return credentials
+    # Exchange auth code for access token, refresh token, and ID token
+    credentials = client.credentials_from_clientsecrets_and_code(
+        CLIENT_SECRET_FILE,
+       ['https://www.googleapis.com/auth/drive.metadata.readonly',
+          'https://www.googleapis.com/auth/meetings.space.created',
+          'https://www.googleapis.com/auth/userinfo.email', 
+          'https://www.googleapis.com/auth/userinfo.profile',
+          'openid'],
+        code
+    )
+    # print(credittodic(credentials))
+    print(credentials.to_json())
+    return credentials
 
 
 def credittodic(credentials):
