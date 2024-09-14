@@ -5,41 +5,46 @@ import json
 from oauth2client.client import OAuth2Credentials
 from django.core.exceptions import ObjectDoesNotExist
 from .models import UserLogin
-import jwt
+from django.http import JsonResponse
+
 # import jwt
-# def get_id_token_with_code_method_1(code):
-#     credentials = client.credentials_from_clientsecrets_and_code(
-#         'client_secret.json',
-#         ['email','profile'],
-#         code
-#     )
-#     print(credentials.id_token)
-#     return credentials.id_token
+# import jwt
+def get_id_token_with_code_method_1(code):
+    try:
+        credentials = client.credentials_from_clientsecrets_and_code(
+        'client_secret.json',
+        ['email','profile'],
+        code
+    )
+    except:
+        return JsonResponse({"what the hell happene":"idk"})
+    print(credentials.id_token)
+    return credentials.id_token
 
-def get_id_token_with_code_method_2(code):
-    token_enpoint = "https://oauth2.googleapis.com/token"
-    payload ={
-        'code':code,
-        'client_id':'770296241282-5ubc9qv97gb8rgh9i74t0g1879v8qo36.apps.googleusercontent.com',
-        'client_secret':'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',
-        'grant_type': 'authorization_code',
-        'redirect_uri':"postmessage"
-    }
+# def get_id_token_with_code_method_2(code):
+#     token_enpoint = "https://oauth2.googleapis.com/token"
+#     payload ={
+#         'code':code,
+#         'client_id':'770296241282-5ubc9qv97gb8rgh9i74t0g1879v8qo36.apps.googleusercontent.com',
+#         'client_secret':'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',
+#         'grant_type': 'authorization_code',
+#         'redirect_uri':"postmessage"
+#     }
 
-    body = urllib.parse.urlencode(payload)
-    headers = {
-        'content-type':'application/x-www-form-urlencoded'
-    }
+#     body = urllib.parse.urlencode(payload)
+#     headers = {
+#         'content-type':'application/x-www-form-urlencoded'
+#     }
 
 
-    response = requests.post(token_enpoint,data= body,headers=headers)
-    print(response.json())
-    if response.ok:
-        id_token = response.json()['id_token']
-        return jwt.decode(id_token, options={"verify_signature": False})
-    else:
-        print(response.json())
-        return None
+#     response = requests.post(token_enpoint,data= body,headers=headers)
+#     print(response.json())
+#     if response.ok:
+#         id_token = response.json()['id_token']
+#         return jwt.decode(id_token, options={"verify_signature": False})
+#     else:
+#         print(response.json())
+#         return None
 
 # def get_id_token_with_code_method_2(code):
 #     CLIENT_SECRET_FILE = 'client_secret.json'
