@@ -121,7 +121,7 @@ class LoginWithGoogle(APIView):
             print("step1 recivied code\t",code)
             credentials = utils.get_id_token_with_code_method_2(code)
             print("step 2:credentials\n",credentials)
-            return JsonResponse(credentials,safe=False)
+            return JsonResponse({"messsage":"somehting has happened"})
             # id_token = credentials.id_token
             # access_token = {
             #     "access_token": credentials.access_token,
