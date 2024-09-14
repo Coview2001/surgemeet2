@@ -5,58 +5,58 @@ import json
 from oauth2client.client import OAuth2Credentials
 from django.core.exceptions import ObjectDoesNotExist
 from .models import UserLogin
-
+import jwt
 # import jwt
-def get_id_token_with_code_method_1(code):
-    credentials = client.credentials_from_clientsecrets_and_code(
-        'client_secret.json',
-        ['email','profile'],
-        code
-    )
-    print(credentials.id_token)
-    return credentials.id_token
-
-# def get_id_token_with_code_method_2(code):
-#     token_enpoint = "https://oauth2.googleapis.com/token"
-#     payload ={
-#         'code':code,
-#         'client_id':'770296241282-5ubc9qv97gb8rgh9i74t0g1879v8qo36.apps.googleusercontent.com',
-#         'client_secret':'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',
-#         'grant_type': 'authorization_code',
-#         'redirect_uri':"postmessage"
-#     }
-
-#     body = urllib.parse.urlencode(payload)
-#     headers = {
-#         'content-type':'application/x-www-form-urlencoded'
-#     }
-
-
-#     response = requests.post(token_enpoint,data= body,headers=headers)
-#     print(response.json())
-#     if response.ok:
-#         id_token = response.json()['id_token']
-#         return jwt.decode(id_token, options={"verify_signature": False})
-#     else:
-#         print(response.json())
-#         return None
+# def get_id_token_with_code_method_1(code):
+#     credentials = client.credentials_from_clientsecrets_and_code(
+#         'client_secret.json',
+#         ['email','profile'],
+#         code
+#     )
+#     print(credentials.id_token)
+#     return credentials.id_token
 
 def get_id_token_with_code_method_2(code):
-    CLIENT_SECRET_FILE = 'client_secret.json'
+    token_enpoint = "https://oauth2.googleapis.com/token"
+    payload ={
+        'code':code,
+        'client_id':'770296241282-5ubc9qv97gb8rgh9i74t0g1879v8qo36.apps.googleusercontent.com',
+        'client_secret':'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',
+        'grant_type': 'authorization_code',
+        'redirect_uri':"postmessage"
+    }
 
-    # Exchange auth code for access token, refresh token, and ID token
-    credentials = client.credentials_from_clientsecrets_and_code(
-        CLIENT_SECRET_FILE,
-       ['https://www.googleapis.com/auth/drive.metadata.readonly',
-          'https://www.googleapis.com/auth/meetings.space.created',
-          'https://www.googleapis.com/auth/userinfo.email', 
-          'https://www.googleapis.com/auth/userinfo.profile',
-          'openid'],
-        code
-    )
-    # print(credittodic(credentials))
-    print(credentials.to_json())
-    return credentials
+    body = urllib.parse.urlencode(payload)
+    headers = {
+        'content-type':'application/x-www-form-urlencoded'
+    }
+
+
+    response = requests.post(token_enpoint,data= body,headers=headers)
+    print(response.json())
+    if response.ok:
+        id_token = response.json()['id_token']
+        return jwt.decode(id_token, options={"verify_signature": False})
+    else:
+        print(response.json())
+        return None
+
+# def get_id_token_with_code_method_2(code):
+#     CLIENT_SECRET_FILE = 'client_secret.json'
+
+#     # Exchange auth code for access token, refresh token, and ID token
+#     credentials = client.credentials_from_clientsecrets_and_code(
+#         CLIENT_SECRET_FILE,
+#        ['https://www.googleapis.com/auth/drive.metadata.readonly',
+#           'https://www.googleapis.com/auth/meetings.space.created',
+#           'https://www.googleapis.com/auth/userinfo.email', 
+#           'https://www.googleapis.com/auth/userinfo.profile',
+#           'openid'],
+#         code
+#     )
+#     # print(credittodic(credentials))
+#     print(credentials.to_json())
+#     return credentials
 
 
 def credittodic(credentials):
