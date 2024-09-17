@@ -79,7 +79,6 @@ def css_compare(req    ):
         css_tuples_a = css_to_tuples("",keys)
         css_tuples_b = css_to_tuples(css_code,'')
         common_keywords = [i for i in css_tuples_a if i in css_tuples_b]
-        # print(len(common_keywords),len(css_tuples_a))
         output={}
         if common_keywords == css_tuples_a:
            output.update({"valid": True,"message": "CSS code is valid."})
@@ -88,7 +87,6 @@ def css_compare(req    ):
         score = f'{len(common_keywords) }/{len(css_tuples_a) }'
         data.update({"Score": score,"Result":score})
         res= add_daysQN_db(data)#add_QnsToDb(data,len(common_keywords),score)
-        # print('database',res)
         output.update({"score": score,"Res":res})
         return HttpResponse(json.dumps(output), content_type='application/json')
     except Exception as e:
@@ -128,17 +126,14 @@ def html_page(request):
             user_elements = extract_tags_and_attributes(user_soup)
             common_keywords = [i for i in sample_elements if i in user_elements]
             output = {}
-            # print(sample_elements,'\n\n',user_elements,'\n\n',user_soup)
             if len(common_keywords) == len(sample_elements):
                 output.update({"valid": True,"message": "HTML code is valid."})
             else:
                 output.update({"valid": False,"message": "HTML code is Not valid."})
 
             score = f'{len(common_keywords) }/{len(sample_elements) }'
-            # print(score)
             data.update({"Score": score,"Result":score})
             res= add_daysQN_db(data)#add_QnsToDb(data,len(common_keywords),score)
-            # print('database',res)
             output.update({"score": score,"Res":res})
             return HttpResponse(json.dumps(output), content_type='application/json')
 

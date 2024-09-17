@@ -90,7 +90,6 @@ def frontend_Questions_page(req):
                 "Status":user.Qns_status.get(Subject).get(i.get('Qn_name'),0),
                 "Score":str(getDayScore(anslist,i.get("Qn_name")))+'/'+str(outoff),
                 })
-            # print(out)
         dayinfo = getDaysScore(Subject,user,anslist )
         output = {
             'Qnslist' : out,
@@ -121,7 +120,6 @@ def getDaysScore(Course,user,Qnslists):
 
 def add_daysQN_db(data):
     try:
-        print('frontend')
         res = data.get("Result")
         if data.get("Subject") == 'HTML' or data.get("Subject") == 'CSS' or data.get("Subject") == 'Java Script' or data.get("Subject") == 'Java_Script':
                 requirements = int(str(data.get("Score")).split('/')[0])/int(str(data.get("Score")).split('/')[1])
@@ -141,7 +139,6 @@ def add_daysQN_db(data):
             )   
             mainuser.save()
         if user is  None:
-            print (result)
             q = QuestionDetails_Days(
                 Student_id=str(data.get("StudentId")),
                 Subject=str(data.get("Subject")),
@@ -179,7 +176,6 @@ def add_daysQN_db(data):
                    
         return {'Result':"Answer has been submitted successfully"}
     except Exception as e:
-        # # print('An error occurred'+str(e))
         return 'An error occurred'+str(e)
 
 @api_view(['POST']) 

@@ -77,11 +77,9 @@ def testcase_validation(query,result,ExpectedOutput,TestCases):
             for t in TestCases:
                 if i==1:
                     t=t["Testcase"].replace('##',' ').split()[0].split(',')
-                    print(t)
                     key=str(result[0].keys())
 
                     key = key.replace('dict_keys(', '')[0:-1]
-                    print(key)
                     t=str(key).lower()==str(t).lower()
                     if t:
                         t={"TestCase"+str(i) :"Passed"}
@@ -91,7 +89,6 @@ def testcase_validation(query,result,ExpectedOutput,TestCases):
                     main.append(t)
                 if i==2:
                     t=t["Testcase"]
-                    print(t)
                     if str(result).lower().replace('.0','')==str(t).lower().replace('.0',''):#======================================
                         t={"TestCase"+str(i) :"Passed"}
                     else:

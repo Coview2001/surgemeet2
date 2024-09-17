@@ -13,7 +13,6 @@ def execute_python(request):
          data = request.body
          jsondata = json.loads(data)
          code =jsondata.get('Code')
-         #print(code)
          try:
              output=com(code)
              out={"output" : output[0:-1]}
@@ -28,7 +27,6 @@ def com(data):
         if str(data).__contains__("import subprocess") or str(data).__contains__("import os") or str(data).__contains__("import sys") or str(data).__contains__("import commands"):
             return "Error: Invalid code "
         # command = shlex.split(f'python -c "{data}"')
-        # #print(command)
         # result = subprocess.run(command, capture_output=True, text=True)
         result = subprocess.run(['python', '-c', data], capture_output=True, text=True)
         output = result.stdout if result.stdout else result.stderr
@@ -44,7 +42,6 @@ def submit_python(request):
             jsondata = json.loads(request.body)
             code=jsondata.get('Code')
             callfunc=jsondata.get('CallFunction')
-            #print(code+'\n'+callfunc)
             code_data=(code+'\n'+callfunc).split('\n')
             result=jsondata.get('Result')
             TestCases=jsondata.get('TestCases')
@@ -61,7 +58,6 @@ def submit_python(request):
                                 boll.append({t:code_data.index(c),"val": str(c)})
                                 break 
                     unique_in_tc = [item for item in tc if item not in {key for d in boll for key in d.keys()}]
-                    #print(unique_in_tc)
                     for u in unique_in_tc:
                         if str(code).__contains__(u):
                             boll.append({u:True,"val": str(u)})
@@ -71,7 +67,6 @@ def submit_python(request):
                     else:
                         t={"TestCase"+str(i+1) :"Failed"}
                         main.append(t)
-                    #print(boll)
                 if i>0:
                     tc=tc['Testcase']
                     Values=tc['Value']
@@ -90,9 +85,6 @@ def submit_python(request):
                     newcode=""
                     for c in code_data:
                         newcode=newcode+str(c)+'\n' 
-                    # print(newcode)
-                    # print(len(Output ))
-                    # print(slashNreplace(com(newcode)))
                     if str(slashNreplace(str(Output)).lower().replace(' ',''))==slashNreplace(str(com(newcode)).lower().replace(' ','')):
                         t={"TestCase"+str(i+1) :"Passed"}
                     else:

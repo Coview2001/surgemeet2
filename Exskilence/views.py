@@ -16,7 +16,7 @@ CONTAINER ="internship"
 
 @api_view(['GET'])   
 def home(request):
-    return HttpResponse("Welcome to the Home Page of Exskilence 01")
+    return HttpResponse("Welcome to the Home Page of Exskilence 02")
 
 @api_view(['POST'])
  
@@ -24,11 +24,8 @@ def getcourse(req):
     try:
         data = json.loads(req.body)
         user = StudentDetails.objects.get(StudentId=data.get('StudentId'))
-        print('1')
         userscore = StudentDetails_Days_Questions.objects.filter(Student_id=data.get('StudentId')).first()
-        print('2')
         if userscore is None:
-            print('3')
             userscore = StudentDetails_Days_Questions.objects.create(
                 Student_id = data.get('StudentId'),
                 Start_Course = {}, # {data.get('Course'):str(datetime.utcnow().__add__(timedelta(hours=5,minutes=30)))},
@@ -38,17 +35,13 @@ def getcourse(req):
                 Ans_lists = { },
                 Score_lists = {}) # {data.get('Course')+'Score':[]}  )
                 
-            print(userscore)
-        print('4',userscore)
         Scolist = [str(l).replace("Score","") for l in list(userscore.Score_lists.keys())]
-        print('5')
         if Scolist.__contains__("HTML") or Scolist.__contains__("CSS"):
             if Scolist.__contains__("HTML"):
                 Scolist.remove("HTML")
             if Scolist.__contains__("CSS"):
                 Scolist.remove("CSS")
             Scolist.append("HTMLCSS")
-        print('6')
         if len(Scolist)  != len(user.Courses):
             for i in user.Courses:
                 if i == "HTMLCSS":
@@ -60,7 +53,6 @@ def getcourse(req):
                     if userscore.Score_lists.get(str(i)+"Score",None) is None:
                         userscore.Score_lists.update({str(i)+"Score":"0/0"})
             userscore.save()
-        print('7')
         out = {}
         intcourse ={
             "Sub":[],
@@ -70,7 +62,6 @@ def getcourse(req):
         Enrolled_courses = []
         Total_Score = 0
         Total_Score_Outof = 0
-        print('8')
         if user:
             def getdays(date):
                     date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S")
@@ -83,7 +74,6 @@ def getcourse(req):
                     formatted_date =  (f"{day}{suffix} {calendar.month_abbr[month]}")
                     return formatted_date
             courses=CourseDetails.objects.filter().order_by('SubjectId').values()
-            print(courses)
             timestart = user.Course_StartTime
             for course in courses:
                 if course.get('SubjectName') in user.Courses  :
@@ -154,7 +144,6 @@ def getdays(req):
         else:
             user = createStdQnDays(data)
             for day in range(1,json_content.get('Total_Days')+1):
-                    # # print(day)
                     qnsdata = download_list_blob2('Internship_days_schema/'+data.get('Course')+'/Day_'+str(day)+'/','',CONTAINER)
                     user.Qns_lists.update({data.get('Course')+'_Day_'+str(day):random.sample([j.get('Qn_name') for j in qnsdata], len(qnsdata))})
                     user.Qns_status.update({data.get('Course')+'_Day_'+str(day):{i:0 for i in user.Qns_lists.get(data.get('Course')+'_Day_'+str(day))}})
@@ -255,7 +244,6 @@ def getQnslist(req):
             if u:
                 return u.Score
             return 0
-        # # print(qnsdata)
         for i in qnsdata:
             level = str(i.get("Qn_name"))[-4]
             outof =''
@@ -273,7 +261,6 @@ def getQnslist(req):
                             "Qn":i.get("Qn"),
                             "Status":user.Qns_status.get(data.get('Course')+'_Day_'+str(data.get('Day'))).get(i.get("Qn_name")),
                             "Score":str(getDayScore(anslist,i.get("Qn_name")))+'/'+str(outof)})
-        # # print(len(Qnslist))
         
         if Qlist:
             arranged_list = sorted(Qnslist, key=lambda x: Qlist.index(x['Qn_name']))
@@ -341,7 +328,6 @@ def submit(request)  :
 def Scoring_logic(passedcases,data):
     attempt = data.get("Attempt")
     if str(data.get('Qn'))[-4]=="E":
-        # # print("Easy")
         if attempt == 1:
             score = 5
         elif attempt == 2:
@@ -351,7 +337,6 @@ def Scoring_logic(passedcases,data):
         else:
             score = 0
     elif str(data.get('Qn'))[-4]=="M":
-        # # print("Medium")
         if attempt == 1 or attempt == 2:
             score = 10
         elif attempt == 3:
@@ -365,7 +350,6 @@ def Scoring_logic(passedcases,data):
         else:
             score = 0
     elif str(data.get('Qn'))[-4]=="H":
-        # # print("Hard")
         if attempt == 1 or attempt == 2 or attempt == 3:
             score = 15
         elif attempt == 4 or attempt == 5:
@@ -462,7 +446,6 @@ def add_daysQN_db(data):
         
         return {'Result':"Answer has been submitted successfully"}
     except Exception as e:
-        print('An error occurred'+str(e))
         return 'An error occurred'+str(e)
 
 
@@ -525,22 +508,17 @@ def updatestatues(req):
         mainuser = StudentDetails_Days_Questions.objects.filter(Student_id=str(data.get("StudentId"))).first()
         if mainuser is None:
             HttpResponse('No data found')
-        # print(mainuser.Qns_status )
         # mainuser.Qns_status.update(data.get("Data"))
         # mainuser.save()
         for category, values in mainuser.Qns_status .items():
-            print(f"Category: {category}")
 
             for key, value in values.items():
                user = QuestionDetails_Days.objects.filter(Student_id=str(data.get("StudentId")),Qn=str(key)).first()
                if user:
-                    print(user.Result.get('TestCases').get('Result',0))
                     if (user.Result.get('TestCases').get('Result',0))=="True":
                         mainuser.Qns_status.get(category).update({key:3})
                     else:
                         mainuser.Qns_status.get(category).update({key:2})
-               print(f"  Key: {key}, Value: {value},new value:{mainuser.Qns_status.get(category).get(key)}")
-        print("")
         # mainuser.save()
         return HttpResponse(json.dumps( mainuser.Qns_status ), content_type='application/json')
     except Exception as e:

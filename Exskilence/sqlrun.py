@@ -13,7 +13,6 @@ def local(data):
     try:
             query = data
             query = mysqlToSql(query)
-            # print('AFTER',query)
             connection_string = (f'Driver={MSSQL_DRIVER};'f'Server={MSSQL_SERVER_NAME};'f'Database={MSSQL_DATABASE_NAME};'f'UID={MSSQL_USERNAME};'f'PWD={MSSQL_PWD};')    
             conn = pyodbc.connect(connection_string)
             cursor = conn.cursor()
@@ -56,20 +55,15 @@ def local(data):
                 out=[{"result":result}]
                 # out='{"result":"'+result+'['+str(00)+']"}'
             conn.close()
-            # print('out')
             return out
     except pyodbc.Error as e:
-            # print('Error',str(e))
             m=str(e).split(']')[-1]
-            # print(m.replace("(SQLExecDirectW)')",''))
-            # print(f"Connection failed: {m.replace("(SQLExecDirectW)')",'')}")
             out=  [{"Error": m.replace("(SQLExecDirectW)')",'')}]#'{"error":"'+m[0:-2]+'"}'
             return out
     
 def mysqlToSql(query):
 
     query = dateFormat(query)
-    # print('in my to ms',query.lower())
 
     if str(query).lower().__contains__("character_length(") or str(query).lower().__contains__("length(" ) or str(query).lower().__contains__("char_length("):
         query = query.replace("CHARACTER_LENGTH(", "LEN(")
@@ -81,7 +75,6 @@ def mysqlToSql(query):
         query = query.replace("Char_length(", "LEN(")
         query = query.replace("Character_length(", "LEN(")
         query = query.replace("Length()", "LEN(")
-        # print('in1')
     if str(query).lower().__contains__("limit"):
         pattern = re.compile(r"(?i)limit\s*(\d+),\s*(\d+)")
         pattern2 = re.compile(r"(?i)limit\s*(\d+) offset\s*(\d+)")
@@ -96,12 +89,9 @@ def mysqlToSql(query):
             return f"TOP {count}"
         if (pattern.search(query.lower())):
             query = pattern.sub(replacer, query)
-            # print('in2')
         elif (pattern2.search(query.lower())):
             query = pattern2.sub(replacer, query)
-            # print('in2')
         elif(limit_pattern_without_offset.search(query.lower())):
-            # print('in3')
             new_query = limit_pattern_without_offset.sub(replacer_without_offset, query)
             if  'select' in (new_query).lower():
                 top =re.compile(r"(?i)TOP\s*(\d+)")
@@ -109,7 +99,6 @@ def mysqlToSql(query):
                 new_query = new_query.replace(ele,'') 
                 query = new_query.replace('select', 'SELECT '+ele+' ') if 'select' in (new_query) else new_query.replace('SELECT', 'SELECT '+ele+' ')
                 # query = 'SELECT ' + ele + ' ' + new_query.lower().split('select', 1)[1]
-            # print('in4',query)
     
     if str(query).lower().__contains__("fetch first") and str(query).lower().__contains__("rows only"):
         pattern = re.compile(r"(?i)fetch first\s*(\d+)")
@@ -120,7 +109,6 @@ def mysqlToSql(query):
 
         if (pattern.search(query.lower())):
             query = pattern.sub(replacer, query)
-            # print('in2')
         # nq = str(query).lower().split('fetch first', 1)[1]
         query
 
@@ -199,7 +187,6 @@ def mysqlToSql(query):
         query = query.replace("IF(", "IIF(")
 
     if str(query).lower().__contains__("group_concat(") : 
-        # print('in')
         concat = r'(?i)GROUP_CONCAT\(([^,]+)\s*SEPARATOR\s*([^)]*)\)'
         concat_replacement = r'STRING_AGG(\1, \2)'
         query = re.sub(concat, concat_replacement, query)
@@ -264,9 +251,7 @@ def get_tables(tables):
                 conn = pyodbc.connect(connection_string)
                 cursor = conn.cursor()
                 tables = str(tables).split(',')
-                # print(tables)
                 for table in tables:
-                    # print(table)
                     cursor.execute("SELECT * FROM " + table)
                     columns = [desc[0] for desc in cursor.description]
                     rows = cursor.fetchall()
