@@ -99,8 +99,7 @@ def testcase_validation(query,result,ExpectedOutput,TestCases):
                     t=t['Testcase']
                     q = str(re.sub(r"([^\w\s])", r" \1 ", query)).lower().split()
                     t2 = str(re.sub(r"([^\w\s])", r" \1 ", t)).lower().split()
-                    common = set(q).intersection(t2)
-                    if len(list(common))==len(t2):
+                    if str(q).__contains__(str(t2)[1:-1]):#len(list(common))==len(t2):
                         t={"TestCase"+str(i) :"Passed"}
                     else:
                         t={"TestCase"+str(i) :"Failed"}

@@ -1,6 +1,7 @@
 import calendar
 from decimal import Decimal
 import json
+import math
 import random
 import re
 from django.http import HttpResponse
@@ -16,7 +17,7 @@ CONTAINER ="internship"
 
 @api_view(['GET'])   
 def home(request):
-    return HttpResponse("Welcome to the Home Page of Exskilence 04")
+    return HttpResponse("Welcome to the Home Page of Exskilence 05")
 
 @api_view(['POST'])
 def fetch(request):
@@ -378,7 +379,7 @@ def Scoring_logic(passedcases,data):
             score = 2
         else:
             score = 0
-    return round(score*passedcases)
+    return math.floor(score*passedcases)
 
 def add_daysQN_db(data):
     try:

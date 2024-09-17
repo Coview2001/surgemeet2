@@ -2,6 +2,7 @@
 
 
 import json
+import math
 import random
 from datetime import date, datetime, time, timedelta
 from django.http import HttpResponse
@@ -47,7 +48,7 @@ def frontend_Questions_page(req):
             qlist = user.Qns_lists.get(Subject)
         arranged_list = sorted(qnsdata, key=lambda x: qlist.index(x['Qn_name']))
         Qnslist = arranged_list
-        anslist = QuestionDetails_Days.objects.filter(Student_id = data.get('StudentId'),Subject = Subject).all()
+        anslist = QuestionDetails_Days.objects.filter(Student_id = data.get('StudentId')).all()
         out = []
         def getDayScore(anslist,QName):
             u = anslist.filter(Qn = QName).first()
@@ -75,12 +76,15 @@ def frontend_Questions_page(req):
                     HTCSstatus = 2
                 elif HTMLstatus == 3 and CSSstatus == 3:
                     HTCSstatus = 3
+                htmlscore = getDayScore(anslist.filter( Subject = "HTML"),i.get("Qn_name"))
+                cssscore = getDayScore(anslist.filter( Subject = "CSS"),i.get("Qn_name"))
+                htcscore = math.floor((htmlscore+cssscore)/2)
                 out.append({
                 "Level":level1,
                 "Qn_name":i.get('Qn_name'),
                 "Qn":i.get('Qn'),
                 "Status":HTCSstatus,
-                "Score":str(getDayScore(anslist,i.get("Qn_name")))+'/'+str(outoff),
+                "Score":str( htcscore)+'/'+str(outoff),
                 })
             else:
                 out.append({
@@ -88,7 +92,7 @@ def frontend_Questions_page(req):
                 "Qn_name":i.get('Qn_name'),
                 "Qn":i.get('Qn'),
                 "Status":user.Qns_status.get(Subject).get(i.get('Qn_name'),0),
-                "Score":str(getDayScore(anslist,i.get("Qn_name")))+'/'+str(outoff),
+                "Score":str(getDayScore(anslist.filter( Subject = Subject),i.get("Qn_name")))+'/'+str(outoff),
                 })
         dayinfo = getDaysScore(Subject,user,anslist )
         output = {

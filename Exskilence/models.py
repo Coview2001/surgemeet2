@@ -99,11 +99,8 @@ class CoursePackages(models.Model):
     CourseId       = models.CharField(max_length=9, primary_key=True)
     CourseName     = models.CharField(max_length=20)
     CourseDescription = models.CharField(max_length=500)
-    Duration       = models.CharField(max_length=20)
     Price          = models.IntegerField()
     Course_content = models.JSONField(default=list)
-    CourseStartDate = models.DateField(default='')
-    CourseEndDate = models.DateField(default='') 
 
 class Login(models.Model):
     id=models.AutoField(primary_key=True)

@@ -27,17 +27,15 @@ def createpkgs(request):
             CoursePackages.objects.create(
                 CourseId='Course'+str(cid),
                 CourseName=data.get('CourseName'),
-                CourseDiscription=data.get('CourseDiscription'),
-                Duration=data.get('Duration'),
+                CourseDescription=data.get('CourseDescription'),
                 Price=data.get('Price'),
                 Course_content=data.get('Courses'),
-                CourseStartDate= datetime.strptime(data.get('CourseStartDate'), '%Y-%m-%d'),
-                CourseEndDate=datetime.strptime(data.get('CourseEndDate'), '%Y-%m-%d'),
             )
             return HttpResponse('Package created successfully')
         else :
             return HttpResponse('Error! Invalid Request',status=400)
     except Exception as e:
+        # print(e)
         return HttpResponse(f"An error occurred: {e}", status=500)
         
 
@@ -52,11 +50,8 @@ def coursepackages(request):
                 'CourseId': course.CourseId,
                 'CourseName': course.CourseName,
                 'CourseDescription': course.CourseDescription,
-                'Duration': course.Duration,
                 'Price': course.Price,
                 'Courses': course.Course_content,
-                'CourseStartDate': str(course.CourseStartDate).split('T')[0],
-                'CourseEndDate': str(course.CourseEndDate).split('T')[0],
             })
         return HttpResponse(json.dumps(data), content_type='application/json')
     except Exception as e:
