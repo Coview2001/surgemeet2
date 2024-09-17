@@ -16,7 +16,7 @@ CONTAINER ="internship"
 
 @api_view(['GET'])   
 def home(request):
-    return HttpResponse("Welcome to the Home Page of Exskilence 03")
+    return HttpResponse("Welcome to the Home Page of Exskilence 04")
 
 @api_view(['POST'])
 def fetch(request):
@@ -545,23 +545,20 @@ def getSTdDaysdetailes(req):
     except Exception as e:
         return HttpResponse('An error occurred'+str(e))
     
-def get_tables():
+def get_tables(tables):
     try:
                 tabs = []
                 connection_string = (f'Driver={MSSQL_DRIVER};'f'Server={MSSQL_SERVER_NAME};'f'Database={MSSQL_DATABASE_NAME};'f'UID={MSSQL_USERNAME};'f'PWD={MSSQL_PWD};')    
                 conn = pyodbc.connect(connection_string)
                 cursor = conn.cursor()
-                query = 'SELECT name FROM sys.tables'
-                cursor.execute(query)
-                tables = cursor.fetchall()                
+                tables = str(tables).split(',')
                 for table in tables:
-                    table_name = table[0]
-                    cursor.execute("SELECT * FROM " + table_name)
+                    cursor.execute("SELECT * FROM " + table)
                     columns = [desc[0] for desc in cursor.description]
                     rows = cursor.fetchall()
                     data = extract_table_rows(rows, columns)
                     
-                    tabs.append({"tab_name": table_name, "data": data})
+                    tabs.append({"tab_name": table, "data": data})
                 return tabs
     except Exception as e:  
-        return "Error getting tables: " + str(e)    
+        return "Error getting tables: " + str(e)
