@@ -23,6 +23,8 @@ urlpatterns = [
     path ('placement/', include('Exskilence.placements_urls')),
     # Exskilence
     path ('', ex.home),
+    path ('fetch/', ex.fetch),
+
     path ('get/course/',ex.getcourse ),
     path ('getdays/',ex.getdays ),
     path ('days/qns/',ex.getQnslist ),

@@ -16,8 +16,20 @@ CONTAINER ="internship"
 
 @api_view(['GET'])   
 def home(request):
-    return HttpResponse("Welcome to the Home Page of Exskilence 02")
+    return HttpResponse("Welcome to the Home Page of Exskilence 03")
 
+@api_view(['POST'])
+def fetch(request):
+    try:
+        data = request.body
+        data = json.loads(data)
+        if request.method == "POST": 
+            user = login_data.objects.get(User_emailID=data.get('Email'))
+            return HttpResponse(json.dumps({ "StudentId" : str(user.User_ID),"user_category" : user.User_catagory  }), content_type='application/json')
+        else :
+            return HttpResponse('Error! Invalid Request',status=400)
+    except login_data.DoesNotExist:
+        return HttpResponse('Error! User does not exist', status=404)
 @api_view(['POST'])
  
 def getcourse(req):
@@ -215,7 +227,7 @@ def createStdQnDays(data):
                 Qns_lists = { },
                 Qns_status = { },
                 Ans_lists = { },
-                Score_lists = {data.get('Course')+'Score':[]}  )
+                Score_lists = {data.get('Course')+'Score':"0/0"}  )
                 
             return user
     except Exception as e:
