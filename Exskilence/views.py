@@ -12,12 +12,14 @@ from Exskilence.models import *
 from Exskilencebackend160924.Blob_service import download_blob2, get_blob_service_client, download_list_blob2
 import pyodbc
 from Exskilence.sqlrun import *
+from django.core.cache import cache
+
 CONTAINER ="internship"
 # Create your views here.
 
 @api_view(['GET'])   
 def home(request):
-    return HttpResponse("Welcome to the Home Page of Exskilence 05")
+    return HttpResponse("Welcome to the Home Page of Exskilence 06")
 
 @api_view(['POST'])
 def fetch(request):
@@ -31,8 +33,10 @@ def fetch(request):
             return HttpResponse('Error! Invalid Request',status=400)
     except login_data.DoesNotExist:
         return HttpResponse('Error! User does not exist', status=404)
+# from django.views.decorators.cache import cache_page
+    
 @api_view(['POST'])
- 
+# @cache_page(60 * 15)
 def getcourse(req):
     try:
         data = json.loads(req.body)
