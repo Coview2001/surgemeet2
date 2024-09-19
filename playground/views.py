@@ -15,7 +15,6 @@ from .models import UserToken
 import pytz
 from userauth.models import UserLogin
 from dateutil import parser
-from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -154,23 +153,36 @@ def get_meeting_details(request, meeting_code,email):
 
 
 def list_conferences(request,email):
+    # Authenticate and get credentials
     print(email)
     creds = get_token(email)
     if creds is None or not creds.valid:
         return HttpResponse("Failed to authenticate Google credentials or credentials are invalid.", content_type="text/plain")
-    try:
-        client = meet_v2.ConferenceRecordsServiceClient(credentials=creds)
-        request_obj = meet_v2.ListConferenceRecordsRequest()
-        page_result = client.list_conference_records(request=request_obj)
-        raw_response = list(page_result) 
-        print("Raw response:", raw_response)  
 
+    try:
+        # Create a client with the authenticated credentials
+        client = meet_v2.ConferenceRecordsServiceClient(credentials=creds)
+        
+        # Initialize request argument(s)
+        request_obj = meet_v2.ListConferenceRecordsRequest()
+
+        # Make the request
+        page_result = client.list_conference_records(request=request_obj)
+
+        # Debug: Print raw response
+        raw_response = list(page_result)  # Collect all responses into a list for inspection
+        print("Raw response:", raw_response)  # Output raw response data for debugging
+
+        # Handle the response
         if not raw_response:
             return HttpResponse("No conference records found for the authenticated user.", content_type="text/plain")
+
         response_data = [str(response) for response in raw_response]
         response_text = "\n".join(response_data)
         return HttpResponse(response_text, content_type="text/plain")
+
     except Exception as error:
+        # Print the error message directly to the HTTP response
         return HttpResponse(f'An error occurred while listing conferences: {error}', content_type="text/plain")
 
 @require_GET
@@ -208,83 +220,6 @@ def list_all_participant_sessions(request, conference_id,email):
         return JsonResponse(sessions_data, safe=False)
     except Exception as error:
         return HttpResponse(f'An error occurred: {error}')
-
-from django.views.decorators.http import require_POST
-from django.http import JsonResponse, HttpResponse
-import json
-
-@csrf_exempt
-@require_POST
-def get_live_details_session(request):
-    try:
-        # Parse JSON data from the request body
-        data = json.loads(request.body)
-        email = data.get('email')
-        meetingcode = data.get('meetingcode')
-        instructorName = data.get('instructorName')
-
-        creds = get_token(email)
-        client = meet_v2.SpacesServiceClient(credentials=creds)
-        space_request = meet_v2.GetSpaceRequest(name=f'spaces/{meetingcode}')
-        response = client.get_space(request=space_request)
-        print("Response of Google Meet details:", response)
-
-        meeting_details = {
-            'name': response.name,
-            'meeting_code': meetingcode,
-            'meeting_uri': response.meeting_uri,
-            'other_attribute': getattr(response, 'other_attribute', 'N/A'),
-        }
-
-        active_conference_id = response.active_conference.conference_record
-        if active_conference_id:
-            try:
-                client = meet_v2.ConferenceRecordsServiceClient(credentials=creds)
-                participant_request = meet_v2.ListParticipantsRequest(parent=f'{active_conference_id}')
-                page_result = client.list_participants(request=participant_request)
-                print(page_result)
-                
-                members_of_meet = {}
-                participants = []
-                for i in page_result:
-                    joined_time = convert_to_ist(i.earliest_start_time)
-                    exit_time = convert_to_ist(i.latest_end_time) if hasattr(i, 'latest_end_time') else None
-                    if exit_time == "N/A":
-                        status = "Active"
-                        exit_time = ""
-                    else:
-                        status = "Inactive"
-                    
-                    if i.signedin_user.display_name == instructorName:
-                        instdic = {
-                            "display_name": str(i.signedin_user.display_name),
-                            "joinedTime": joined_time,
-                            "exitTime": exit_time,
-                            "status": status
-                        }
-                        members_of_meet["instructor"] = instdic
-                    else:
-                        participant_info = {
-                            "display_name": str(i.signedin_user.display_name),
-                            "joinedTime": joined_time,
-                            "exitTime": exit_time,
-                            "status": status
-                        }
-                        participants.append(participant_info)
-                
-                members_of_meet["participants"] = participants
-                return JsonResponse(members_of_meet)
-
-            except Exception as error:
-                return JsonResponse({"error": str(error)})
-        else:
-            return HttpResponse("This is not a live conference, so details cannot be fetched.", content_type="text/plain", status=400)
-
-    except Exception as error:
-        return HttpResponse(f"An error occurred: {error}", content_type="text/plain")
-
-
-
 
 @require_GET
 def getParticipantsList(request, meeting_code, instructorName,email):

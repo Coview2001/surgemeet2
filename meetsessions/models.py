@@ -7,9 +7,9 @@ class Session(models.Model):
     Start_Time = models.CharField(max_length=20)
     conductedby = models.CharField(max_length=50)
     meetlink = models.URLField()
-    Colleges = models.JSONField(default=list)  
-    Branches = models.JSONField(default=list)  
-    ended = models.BooleanField(default=False)
+    Colleges = models.JSONField(default=list)  # Assuming it can have multiple colleges
+    Branches = models.JSONField(default=list)  # Assuming it can have multiple branches
+
 class Student(models.Model):
     session = models.ForeignKey(Session, related_name='students', on_delete=models.CASCADE)
     stuId = models.CharField(max_length=10)

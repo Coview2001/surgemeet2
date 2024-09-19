@@ -2,8 +2,7 @@ from django.urls import path
 from .views import (
     send_meet_link, get_meeting_details, list_conferences,
     list_participants, list_all_participant_sessions,
-    getParticipantsList, getParticipantsLog,
-    get_live_details_session
+    getParticipantsList, getParticipantsLog
 )
 
 urlpatterns = [
@@ -14,5 +13,4 @@ urlpatterns = [
     path('conference/<str:conference_id>/participant_sessions/<str:email>/', list_all_participant_sessions, name='list_all_participant_sessions'),
     path('get_participants_list/<str:meeting_code>/<str:instructorName>/<str:email>/', getParticipantsList, name='get_participants_list'),
     path('get_participants_log/<str:meeting_code>/<str:instructorName>/<str:email>/', getParticipantsLog, name='get_participants_log'),
-    path('justtestting/',get_live_details_session,name='get_live_detials_session')
 ]
