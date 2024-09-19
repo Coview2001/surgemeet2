@@ -196,17 +196,25 @@ def getreport(request, student_id, course, day):
             if q_detail:
                 total_score += q_detail.Score
                 # Determine the question_status based on the Result
-                if isinstance(q_detail.Result, dict) and 'Result' in q_detail.Result:
-                    result = q_detail.Result['Result']
-                    if result is True or str(result).lower() == 'true':
-                        question_status = 'Correct'
-                    elif result is False or str(result).lower() == 'false':
-                        question_status = 'Incorrect'
+                if isinstance(q_detail.Result, dict):
+                    if 'TestCases' in q_detail.Result and 'Result' in q_detail.Result['TestCases']:
+                        result = q_detail.Result['TestCases']['Result']
+                    elif 'Result' in q_detail.Result:
+                        result = q_detail.Result['Result']
                     else:
-                        question_status = 'Skipped'
+                        result = None
                 else:
-                    question_status = 'Unknown'  # In case Result doesn't have the expected structure
-                
+                    result = q_detail.Result
+ 
+                if result is True or str(result).lower() == 'true':
+                    question_status = 'Correct'
+                elif result is False or str(result).lower() == 'false':
+                    question_status = 'Incorrect'
+                elif result == 'Not attempted':
+                    question_status = 'Skipped'
+                else:
+                    question_status = 'Unknown'
+               
                 output.append({
                     'Index': index,
                     'Qn': q,

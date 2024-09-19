@@ -140,20 +140,23 @@ def scorescumulation(student):
             continue
     return score_sum
 
-def questions_ans_count(student, category):
-    ans_count = 0
-    qns_status = student.get('Qns_status', {}).get(category, {})
 
-    for value in qns_status.values():
-        if value >= 2:
-            ans_count += 1
-
-    return ans_count
 
 
 def totalnumberofsquesntionscompleted(student):
-    categories = [ "CSS", "Python", "SQL"]
-    return sum(questions_ans_count(student, category) for category in categories)
+    categories = ["CSS", "Python", "SQL"]
+    totalllllllllllll = 0
+    user = QuestionDetails_Days.objects.filter(
+        Student_id=student['Student_id']
+    ).values()
+    for i in categories:
+        totalnumQues =user.filter(
+        Student_id=student['Student_id'],Subject=i
+        ) 
+        totalllllllllllll += len(totalnumQues)
+    # print("totalnumQues\t\n=========="+str(totalllllllllllll)+"\t"+str(student['Student_id']))
+    return totalllllllllllll
+    
 @api_view(['GET'])
 def getSTdDaysdetailes(req):
     try:
@@ -357,48 +360,3 @@ def studentdata(studentid):
         return stduentsendData
     except Exception as e:
         return {}
-
-def getquestion(questionid):
-    pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     # print("HTML student is "+str(student_ID)+"\t"+str(htmlquestionsanscount(student)))
-            # print("css student is "+str(student_ID)+"\t"+str(cssquestionsanscount(student)))
-            # print("python student is "+str(student_ID)+"\t"+str(pythonquestionsanscount(student)))
-            # print("SQL student is "+str(student_ID)+"\t"+str(SQLquestionsanscount(student))+"\n\n")
