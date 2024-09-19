@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ClearUserLoginData, LoginWithGoogle
+from .views import LoginWithGoogle,ClearUserLoginData
 from .userviews import get_user_details,add_user_details
 
 urlpatterns = [

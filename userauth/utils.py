@@ -4,20 +4,15 @@ import requests
 import json
 from oauth2client.client import OAuth2Credentials
 from django.core.exceptions import ObjectDoesNotExist
-from .models import UserLogin
-from django.http import JsonResponse
+from .models import UserActivity, UserLogin
 
 # import jwt
-# import jwt
 def get_id_token_with_code_method_1(code):
-    try:
-        credentials = client.credentials_from_clientsecrets_and_code(
+    credentials = client.credentials_from_clientsecrets_and_code(
         'client_secret.json',
         ['email','profile'],
         code
     )
-    except:
-        return JsonResponse({"what the hell happene":"idk"})
     print(credentials.id_token)
     return credentials.id_token
 
@@ -81,19 +76,19 @@ def credittodic(credentials):
         }
     return None
 
-# def clear_user_data(user_email):
-#     try:
-#         user_login = UserLogin.objects.get(email=user_email)
-#         user_login.delete()
+def clear_user_data(user_email):
+    try:
+        user_login = UserLogin.objects.get(email=user_email)
+        user_login.delete()
         
-#         try:
-#             user = UserLogin.objects.get(email=user_email)
-#             UserActivity.objects.filter(user=user).delete()
-#         except ObjectDoesNotExist:
-#             print(f"User with email {user_email} does not exist. Skipping activity deletion.")
-#         return {"message": "User login data cleared successfully", "status": "success"}
-#     except UserLogin.DoesNotExist:
-#         return {"message": "User login data not found", "status": "failure"}
+        try:
+            user = UserLogin.objects.get(email=user_email)
+            UserActivity.objects.filter(user=user).delete()
+        except ObjectDoesNotExist:
+            print(f"User with email {user_email} does not exist. Skipping activity deletion.")
+        return {"message": "User login data cleared successfully", "status": "success"}
+    except UserLogin.DoesNotExist:
+        return {"message": "User login data not found", "status": "failure"}
 
 
 
