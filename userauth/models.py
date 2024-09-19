@@ -14,6 +14,10 @@ class UserLogin(models.Model):
     email = models.EmailField(unique=True)
     token = models.JSONField()
 
+
+
+
+
     @classmethod
     def save_or_update(cls, email, token_data):
         """
