@@ -54,8 +54,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    # 'django.middleware.cache.UpdateCacheMiddleware',
-    # 'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000', 
@@ -117,7 +115,7 @@ WSGI_APPLICATION = 'Exskilencebackend160924.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'ExskilenceNEW',
+        'NAME': 'Exskilence',
         'ENFORCE_SCHEMA': False,  
         'CLIENT': {
             'host': 'mongodb+srv://kecoview:FVy5fqqCtQy3KIt6@cluster0.b9wmlid.mongodb.net/',
@@ -178,19 +176,5 @@ EMAIL_HOST_USER = 'kecoview@gmail.com'  # Replace with your Gmail address
 EMAIL_HOST_PASSWORD = 'etbk kimg ghtn yjgj'  # Replace with your Gmail app password
 EMAIL_TLS_CA_FILE = certifi.where()
 
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django_redis.cache.RedisCache',
-#         'LOCATION': 'redis://127.0.0.1:6379/1',
-#         'OPTIONS': {
-#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-#         }
-#     }
-# }
-# # CACHES = {
-# #     'default': {
-# #         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-# #         'LOCATION': '127.0.0.1:11211',
-# #     }
-# # }
+ 
 
