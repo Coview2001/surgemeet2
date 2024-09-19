@@ -115,7 +115,7 @@ WSGI_APPLICATION = 'Exskilencebackend160924.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'Exskilence',
+        'NAME': 'ExskilenceNEW',
         'ENFORCE_SCHEMA': False,  
         'CLIENT': {
             'host': 'mongodb+srv://kecoview:FVy5fqqCtQy3KIt6@cluster0.b9wmlid.mongodb.net/',

@@ -19,7 +19,7 @@ CONTAINER ="internship"
 
 @api_view(['GET'])   
 def home(request):
-    return HttpResponse("Welcome to the Home Page of Exskilence 06")
+    return HttpResponse("Welcome to the Home Page of Exskilence 07")
 
 @api_view(['POST'])
 def fetch(request):

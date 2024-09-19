@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from Exskilence import views as ex,sqlviews as sql,pythonrun as ex_py,HTML_CSS_views as html_css,js_views as js , frontend_views as frontend
-from Exskilence import coursecreatiton as pkgs,urls
+from Exskilence import coursecreatiton as pkgs, v 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Swapnodayaplacements
