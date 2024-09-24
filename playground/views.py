@@ -213,75 +213,75 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse, HttpResponse
 import json
 
-@csrf_exempt
-@require_POST
-def get_live_details_session(request):
-    try:
-        # Parse JSON data from the request body
-        data = json.loads(request.body)
-        email = data.get('email')
-        meetingcode = data.get('meetingcode')
-        instructorName = data.get('instructorName')
+# @csrf_exempt
+# @require_POST
+# def get_live_details_session(request):
+#     try:
+#         # Parse JSON data from the request body
+#         data = json.loads(request.body)
+#         email = data.get('email')
+#         meetingcode = data.get('meetingcode')
+#         instructorName = data.get('instructorName')
 
-        creds = get_token(email)
-        client = meet_v2.SpacesServiceClient(credentials=creds)
-        space_request = meet_v2.GetSpaceRequest(name=f'spaces/{meetingcode}')
-        response = client.get_space(request=space_request)
-        print("Response of Google Meet details:", response)
+#         creds = get_token(email)
+#         client = meet_v2.SpacesServiceClient(credentials=creds)
+#         space_request = meet_v2.GetSpaceRequest(name=f'spaces/{meetingcode}')
+#         response = client.get_space(request=space_request)
+#         print("Response of Google Meet details:", response)
 
-        meeting_details = {
-            'name': response.name,
-            'meeting_code': meetingcode,
-            'meeting_uri': response.meeting_uri,
-            'other_attribute': getattr(response, 'other_attribute', 'N/A'),
-        }
+#         meeting_details = {
+#             'name': response.name,
+#             'meeting_code': meetingcode,
+#             'meeting_uri': response.meeting_uri,
+#             'other_attribute': getattr(response, 'other_attribute', 'N/A'),
+#         }
 
-        active_conference_id = response.active_conference.conference_record
-        if active_conference_id:
-            try:
-                client = meet_v2.ConferenceRecordsServiceClient(credentials=creds)
-                participant_request = meet_v2.ListParticipantsRequest(parent=f'{active_conference_id}')
-                page_result = client.list_participants(request=participant_request)
-                print(page_result)
+#         active_conference_id = response.active_conference.conference_record
+#         if active_conference_id:
+#             try:
+#                 client = meet_v2.ConferenceRecordsServiceClient(credentials=creds)
+#                 participant_request = meet_v2.ListParticipantsRequest(parent=f'{active_conference_id}')
+#                 page_result = client.list_participants(request=participant_request)
+#                 print(page_result)
                 
-                members_of_meet = {}
-                participants = []
-                for i in page_result:
-                    joined_time = convert_to_ist(i.earliest_start_time)
-                    exit_time = convert_to_ist(i.latest_end_time) if hasattr(i, 'latest_end_time') else None
-                    if exit_time == "N/A":
-                        status = "Active"
-                        exit_time = ""
-                    else:
-                        status = "Inactive"
+#                 members_of_meet = {}
+#                 participants = []
+#                 for i in page_result:
+#                     joined_time = convert_to_ist(i.earliest_start_time)
+#                     exit_time = convert_to_ist(i.latest_end_time) if hasattr(i, 'latest_end_time') else None
+#                     if exit_time == "N/A":
+#                         status = "Active"
+#                         exit_time = ""
+#                     else:
+#                         status = "Inactive"
                     
-                    if i.signedin_user.display_name == instructorName:
-                        instdic = {
-                            "display_name": str(i.signedin_user.display_name),
-                            "joinedTime": joined_time,
-                            "exitTime": exit_time,
-                            "status": status
-                        }
-                        members_of_meet["instructor"] = instdic
-                    else:
-                        participant_info = {
-                            "display_name": str(i.signedin_user.display_name),
-                            "joinedTime": joined_time,
-                            "exitTime": exit_time,
-                            "status": status
-                        }
-                        participants.append(participant_info)
+#                     if i.signedin_user.display_name == instructorName:
+#                         instdic = {
+#                             "display_name": str(i.signedin_user.display_name),
+#                             "joinedTime": joined_time,
+#                             "exitTime": exit_time,
+#                             "status": status
+#                         }
+#                         members_of_meet["instructor"] = instdic
+#                     else:
+#                         participant_info = {
+#                             "display_name": str(i.signedin_user.display_name),
+#                             "joinedTime": joined_time,
+#                             "exitTime": exit_time,
+#                             "status": status
+#                         }
+#                         participants.append(participant_info)
                 
-                members_of_meet["participants"] = participants
-                return JsonResponse(members_of_meet)
+#                 members_of_meet["participants"] = participants
+#                 return JsonResponse(members_of_meet)
 
-            except Exception as error:
-                return JsonResponse({"error": str(error)})
-        else:
-            return HttpResponse("This is not a live conference, so details cannot be fetched.", content_type="text/plain", status=400)
+#             except Exception as error:
+#                 return JsonResponse({"error": str(error)})
+#         else:
+#             return HttpResponse("This is not a live conference, so details cannot be fetched.", content_type="text/plain", status=400)
 
-    except Exception as error:
-        return HttpResponse(f"An error occurred: {error}", content_type="text/plain")
+#     except Exception as error:
+#         return HttpResponse(f"An error occurred: {error}", content_type="text/plain")
 
 
 
